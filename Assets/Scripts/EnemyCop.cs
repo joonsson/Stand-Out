@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class EnemyCop : Character {
     private float maxSpeed;
-    private float maxSpeedToPlayer;
+    private float maxSpeedToTarget;
     private float acceleration;
-    private float accelerationToPlayer;
+    private float accelerationToTarget;
     private float breakingDrag;
     private bool hasSeenPlayer;
     private bool breaking;
     private Vector2 velocity;
     private GameObject player;
-    private Vector2 playerDirection;
-    private Vector3 playerLastSeen;
+    private Vector2 targetDirection;
+    private Vector3 targetLastSeen;
 
     public LayerMask collisionLayer;
 
@@ -21,9 +21,9 @@ public class EnemyCop : Character {
     protected override void Start () {
         breaking = false;
         maxSpeed = 0.5f;
-        maxSpeedToPlayer = 1.5f;
+        maxSpeedToTarget = 1.5f;
         acceleration = 0.05f;
-        accelerationToPlayer = 0.2f;
+        accelerationToTarget = 0.2f;
         breakingDrag = 0.5f;
         player = GameObject.FindGameObjectWithTag("Player");
         float x = Random.Range(-1f, 1f);
@@ -40,14 +40,14 @@ public class EnemyCop : Character {
 
     void FixedUpdate()
     {
-        if (CanSeePlayer(out playerDirection))
+        if (CanSeeTarget(out targetDirection))
         {
-            velocity = new Vector2(playerDirection.x, playerDirection.y) * accelerationToPlayer;
-            base.Move(velocity, maxSpeedToPlayer);
+            velocity = new Vector2(targetDirection.x, targetDirection.y) * accelerationToTarget;
+            base.Move(velocity, maxSpeedToTarget);
         }
         else if (hasSeenPlayer)
         {
-            if (breaking || (playerLastSeen - transform.position).magnitude < 0.5f)
+            if (breaking || (targetLastSeen - transform.position).magnitude < 0.5f)
             {
                 hasSeenPlayer = false;
                 breaking = true;
@@ -55,36 +55,40 @@ public class EnemyCop : Character {
             }
             else
             {
-                Vector2 lastSeenHeading = playerLastSeen - transform.position;
-                float lastSeenDistance = lastSeenHeading.magnitude;
-                Vector2 lastSeenDirection = lastSeenHeading / lastSeenDistance;
-                velocity = new Vector2(lastSeenDirection.x, lastSeenDirection.y) * accelerationToPlayer;
-                base.Move(velocity, maxSpeedToPlayer);
+                Vector2 lastSeenHeading = targetLastSeen - transform.position;
+                velocity = lastSeenHeading.normalized * accelerationToTarget;
+                base.Move(velocity, maxSpeedToTarget);
             }
         }
         else
         {
             base.KeepMoving(maxSpeed);
         }
+        base.SetRotation();
     }
 
-    private bool CanSeePlayer(out Vector2 playerDirection)
+    private bool CanSeeTarget(out Vector2 targetDirection)
     {
         GetComponent<BoxCollider2D>().enabled = false;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, player.transform.position - transform.position, collisionLayer);
         GetComponent<BoxCollider2D>().enabled = true;
         if (hit.collider != null && hit.collider.tag == "Player")
         {
-            Vector2 playerHeading = player.transform.position - transform.position;
-            float playerDistance = playerHeading.magnitude;
-            playerDirection = playerHeading / playerDistance;
+            Vector2 targetHeading = player.transform.position - transform.position;
+            float targetDistance = targetHeading.magnitude;
+            if (targetDistance > 50)
+            {
+                targetDirection = new Vector2(0, 0);
+                return false;
+            }
+            targetDirection = targetHeading / targetDistance;
 
-            playerLastSeen = player.transform.position;
+            targetLastSeen = player.transform.position;
             hasSeenPlayer = true;
             breaking = false;
             return true;
         }
-        playerDirection = new Vector2(0, 0);
+        targetDirection = new Vector2(0, 0);
         return false;
     }
 }

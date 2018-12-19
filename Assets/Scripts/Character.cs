@@ -45,7 +45,12 @@ public abstract class Character : MonoBehaviour {
 
     protected virtual void KeepMoving(float maxSpeed)
     {
-        rb.AddForce(rb.velocity, ForceMode2D.Impulse);
+        rb.AddForce(rb.velocity.normalized, ForceMode2D.Impulse);
         rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxSpeed);
+    }
+
+    protected virtual void SetRotation()
+    {
+        transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
     }
 }

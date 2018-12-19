@@ -20,16 +20,28 @@ public class Player : Character {
 	void Update () {
         if (!queuedMove)
         {
+#if UNITY_IOS || UNITY_ANDROID
+            Touch lastTouch;
+            if (Input.touches.Length > 0)
+            {
+                lastTouch = Input.touches[Input.touches.Length - 1];
+                Vector2 position = transform.position;
+                Vector2 direction = lastTouch.position - position;
+                velocity = direction.normalized * acceleration;
+                queuedMove = true;
+            }
+#else
             float horizontal = 0;
             float vertical = 0;
 
             horizontal = Input.GetAxisRaw("Horizontal");
             vertical = Input.GetAxisRaw("Vertical");
 
-            velocity = new Vector2(horizontal, vertical) * acceleration;
+            velocity = new Vector2(horizontal, vertical).normalized * acceleration;
             queuedMove = true;
+#endif
         }
-	}
+    }
 
     void FixedUpdate()
     {
@@ -38,7 +50,6 @@ public class Player : Character {
             base.Move(velocity, maxSpeed);
             queuedMove = false;
         }
-
-       
+        base.SetRotation();
     }
 }
