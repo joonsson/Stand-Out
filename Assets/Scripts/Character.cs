@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour {
     private Rigidbody2D rb;
     private float baseDrag;
+    public bool canMove;
 
 
 	// Use this for initialization
@@ -12,6 +13,7 @@ public abstract class Character : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         baseDrag = 0.1f;
         rb.drag = baseDrag;
+        canMove = true;
 	}
 	
 	// Update is called once per frame
@@ -51,6 +53,14 @@ public abstract class Character : MonoBehaviour {
 
     protected virtual void SetRotation()
     {
-        transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
+        Vector2 current = transform.position;
+        var direction = (rb.velocity + rb.position) - current;
+        var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+    }
+
+    public virtual void setCanMove(bool canIMove)
+    {
+        canMove = canIMove;
     }
 }

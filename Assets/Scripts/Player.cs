@@ -18,9 +18,18 @@ public class Player : Character {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!queuedMove)
+        if (!queuedMove && canMove)
         {
-#if UNITY_IOS || UNITY_ANDROID
+        #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
+            float horizontal = 0;
+            float vertical = 0;
+
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetAxisRaw("Vertical");
+
+            velocity = new Vector2(horizontal, vertical).normalized * acceleration;
+            queuedMove = true;
+        #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             Touch lastTouch;
             if (Input.touches.Length > 0)
             {
@@ -30,26 +39,21 @@ public class Player : Character {
                 velocity = direction.normalized * acceleration;
                 queuedMove = true;
             }
-#else
-            float horizontal = 0;
-            float vertical = 0;
-
-            horizontal = Input.GetAxisRaw("Horizontal");
-            vertical = Input.GetAxisRaw("Vertical");
-
-            velocity = new Vector2(horizontal, vertical).normalized * acceleration;
-            queuedMove = true;
-#endif
+        #endif
         }
     }
 
     void FixedUpdate()
     {
-        if (queuedMove)
+        if (queuedMove && canMove)
         {
             base.Move(velocity, maxSpeed);
             queuedMove = false;
         }
-        base.SetRotation();
+        //base.SetRotation();
+    }
+    public override void setCanMove(bool canIMove)
+    {
+        base.setCanMove(canIMove);
     }
 }

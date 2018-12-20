@@ -14,11 +14,14 @@ public class EnemyCop : Character {
     private GameObject player;
     private Vector2 targetDirection;
     private Vector3 targetLastSeen;
+    private GameManager gameManager;
 
     public LayerMask collisionLayer;
 
     // Use this for initialization
     protected override void Start () {
+        gameManager = GameManager.instance;
+
         breaking = false;
         maxSpeed = 0.5f;
         maxSpeedToTarget = 1.5f;
@@ -40,12 +43,12 @@ public class EnemyCop : Character {
 
     void FixedUpdate()
     {
-        if (CanSeeTarget(out targetDirection))
+        if (canMove && CanSeeTarget(out targetDirection))
         {
             velocity = new Vector2(targetDirection.x, targetDirection.y) * accelerationToTarget;
             base.Move(velocity, maxSpeedToTarget);
         }
-        else if (hasSeenPlayer)
+        else if (canMove && hasSeenPlayer)
         {
             if (breaking || (targetLastSeen - transform.position).magnitude < 0.5f)
             {
@@ -60,7 +63,7 @@ public class EnemyCop : Character {
                 base.Move(velocity, maxSpeedToTarget);
             }
         }
-        else
+        else if (canMove)
         {
             base.KeepMoving(maxSpeed);
         }
@@ -69,26 +72,74 @@ public class EnemyCop : Character {
 
     private bool CanSeeTarget(out Vector2 targetDirection)
     {
+        bool didHit = false;
+        Vector3 targetPosition = new Vector3(100000,100000,100000);
+        targetDirection = new Vector2(0, 0);
+
         GetComponent<BoxCollider2D>().enabled = false;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, player.transform.position - transform.position, collisionLayer);
-        GetComponent<BoxCollider2D>().enabled = true;
+        
         if (hit.collider != null && hit.collider.tag == "Player")
         {
-            Vector2 targetHeading = player.transform.position - transform.position;
-            float targetDistance = targetHeading.magnitude;
-            if (targetDistance > 50)
+            targetPosition = player.transform.position;
+            didHit = true;
+        }
+
+        if (gameManager.allies.Count > 0)
+        {
+            for (int i = 0; i < gameManager.allies.Count; i++)
             {
-                targetDirection = new Vector2(0, 0);
-                return false;
+                var newTarget = gameManager.allies[i].gameObject.transform.position;
+                hit = Physics2D.Raycast(transform.position, newTarget - transform.position, collisionLayer);
+                if (hit.collider != null && hit.collider.tag == "Ally" && ((newTarget - transform.position).magnitude < (targetPosition - transform.position).magnitude))
+                {
+                    targetPosition = newTarget;
+                    didHit = true;
+                }
             }
+        }
+        Vector2 targetHeading = targetPosition - transform.position;
+        float targetDistance = targetHeading.magnitude;
+        if (targetDistance > 10)
+        {
+            targetDirection = new Vector2(0, 0);
+            didHit = false;
+        }
+        if (didHit)
+        {
             targetDirection = targetHeading / targetDistance;
 
             targetLastSeen = player.transform.position;
             hasSeenPlayer = true;
             breaking = false;
-            return true;
         }
-        targetDirection = new Vector2(0, 0);
-        return false;
+        GetComponent<BoxCollider2D>().enabled = true;
+        return didHit;
+    }
+    public override void setCanMove(bool canIMove)
+    {
+        base.setCanMove(canIMove);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            Player player = collision.gameObject.GetComponent<Player>();
+            if (player != null)
+            {
+                player.setCanMove(false);
+                setCanMove(false);
+            }
+        }
+        else if (collision.gameObject.tag == "Ally")
+        {
+            Ally ally = collision.gameObject.GetComponent<Ally>();
+            if (ally != null)
+            {
+                ally.setCanMove(false);
+                setCanMove(false);
+            }
+        }
     }
 }

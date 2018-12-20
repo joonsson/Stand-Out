@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - Civilian
   - Building
+  - Light
+  - Ally
+  - Button
   layers:
   - Default
   - TransparentFX
@@ -17,7 +20,7 @@ TagManager:
   - 
   - 
   - Collision
-  - 
+  - Ground
   - 
   - 
   - 
