@@ -7,12 +7,25 @@ public class Player : Character {
     private float acceleration;
     private Vector2 velocity;
     private bool queuedMove;
+    private Ally ally;
+    private Transform lightPurple;
+    private Transform lightPink;
+    private int timer;
+    private bool startUp;
+    private bool purple;
 
     // Use this for initialization
     protected override void Start () {
         maxSpeed = 2f;
         acceleration = 0.2f;
         queuedMove = false;
+        lightPurple = transform.Find("PlayerLight1");
+        lightPink = transform.Find("PlayerLight2");
+        lightPurple.gameObject.SetActive(false);
+        lightPink.gameObject.SetActive(false);
+        timer = 0;
+        startUp = true;
+        purple = false;
         base.Start();
 	}
 	
@@ -45,6 +58,35 @@ public class Player : Character {
 
     void FixedUpdate()
     {
+        if (startUp && timer > 60)
+        {
+            lightPurple.gameObject.SetActive(true);
+            startUp = false;
+            purple = true;
+            timer = 0;
+        }
+        else if (timer % 10 == 0)
+        {
+            if (purple)
+            {
+                lightPurple.gameObject.SetActive(false);
+                lightPink.gameObject.SetActive(true);
+                purple = false;
+                timer = 0;
+            }
+            else
+            {
+                lightPurple.gameObject.SetActive(true);
+                lightPink.gameObject.SetActive(false);
+                purple = true;
+                timer = 0;
+            }
+        }
+        else
+        {
+            timer++;
+        }
+
         if (queuedMove && canMove)
         {
             base.Move(velocity, maxSpeed);
@@ -55,5 +97,19 @@ public class Player : Character {
     public override void setCanMove(bool canIMove)
     {
         base.setCanMove(canIMove);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Civilian")
+        {
+            Civilian civilian = collision.gameObject.GetComponent<Civilian>();
+            if (civilian != null)
+            {
+                civilian.setCanMove(false);
+                Instantiate(ally, civilian.transform.position, Quaternion.identity);
+                civilian.gameObject.SetActive(false);
+            }
+        }
     }
 }

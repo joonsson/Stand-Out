@@ -119,24 +119,109 @@ public class GameManager : MonoBehaviour {
 
             if (score > 60 && enemies.Count < 4)
             {
+                var rand = Random.Range(0, 1);
 
+                if (rand < 0.25)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.50)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.75)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
             }
             else if (score > 40 && enemies.Count < 3)
             {
+                var rand = Random.Range(0, 1);
 
+                if (rand < 0.25)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.50)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.75)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
             }
             else if (score > 20 && enemies.Count < 2)
             {
+                var rand = Random.Range(0, 1);
 
+                if (rand < 0.25)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.50)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.75)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
             }
             else if (score > 4 && enemies.Count < 1)
             {
+                var rand = Random.Range(0, 1);
 
+                if (rand < 0.25)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.50)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.75)
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(enemy, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
             }
 
             if (civilians.Count < 6)
             {
-                Instantiate(civilian, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                var rand = Random.Range(0, 1);
+
+                if (rand < 0.25)
+                {
+                    Instantiate(civilian, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if (rand < 0.50)
+                {
+                    Instantiate(civilian, new Vector3(cam.transform.position.x + width + Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
+                else if(rand < 0.75)
+                {
+                    Instantiate(civilian, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y + height + Random.Range(10, 30), 1), Quaternion.identity);
+                } 
+                else
+                {
+                    Instantiate(civilian, new Vector3(cam.transform.position.x - Random.Range(10, 30), cam.transform.position.y - Random.Range(10, 30), 1), Quaternion.identity);
+                }
             }
         }
     }
